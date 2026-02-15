@@ -1,0 +1,265 @@
+ 
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>El Viaje Mágico de Lizzy</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body, html { height:100%; font-family: 'Segoe UI', system-ui, sans-serif; overflow:hidden; }
+    
+    .page {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+      transition: opacity 0.8s ease, transform 0.6s ease;
+      opacity: 0;
+      transform: scale(0.98);
+      pointer-events: none;
+      background-size: cover;
+      background-position: center;
+      color: #333;
+    }
+    
+    .page.active {
+      opacity: 1;
+      transform: scale(1);
+      pointer-events: auto;
+      z-index: 10;
+    }
+    
+    h1, h2 { 
+      font-family: 'Brush Script MT', cursive, 'Segoe UI'; 
+      color: #ff99cc; 
+      text-shadow: 0 0 20px rgba(255,255,255,0.95); 
+      margin-bottom: 1.2rem;
+    }
+    
+    h1 { font-size: 5.2rem; animation: float 7s ease-in-out infinite; }
+    h2 { font-size: 3rem; }
+    
+    p { font-size: 1.45rem; max-width: 720px; line-height: 1.6; margin: 1rem auto; color: #3a3a3a; }
+    
+    .btn {
+      margin-top: 2rem;
+      padding: 1.1rem 3rem;
+      font-size: 1.6rem;
+      background: linear-gradient(135deg, #ffccdd, #ff99cc);
+      color: white;
+      border: none;
+      border-radius: 60px;
+      cursor: pointer;
+      box-shadow: 0 10px 30px rgba(255,105,180,0.45);
+      transition: all 0.35s;
+    }
+    
+    .btn:hover { transform: translateY(-6px) scale(1.1); box-shadow: 0 15px 40px rgba(255,105,180,0.65); }
+    
+    /* Botón superior derecha para avanzar página */
+    .next-page-btn {
+      position: fixed;
+      top: 20px;
+      right: 25px;
+      padding: 0.9rem 1.8rem;
+      font-size: 1.3rem;
+      background: linear-gradient(135deg, #fff0f5, #ffd1e0);
+      color: #d64f8e;
+      border: 2px solid #ff99cc;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(255,182,193,0.5);
+      transition: all 0.3s;
+      z-index: 20;
+      pointer-events: auto;
+    }
+    
+    .next-page-btn:hover {
+      transform: scale(1.12) translateY(-3px);
+      background: linear-gradient(135deg, #ffccdd, #ff99cc);
+      color: white;
+      border-color: white;
+    }
+    
+    /* Secretos más visibles */
+    .secret {
+      position: absolute;
+      width: 90px;
+      height: 90px;
+      background: radial-gradient(circle at 30% 30%, #fff, #ffd700 40%, #ffcc00 70%, transparent 90%);
+      border: 3px solid #ffcc00;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 25px #ffd70088, inset 0 0 15px #ffffffaa;
+      animation: pulse 2.8s infinite ease-in-out;
+      opacity: 0.85;
+      transition: all 0.25s;
+      z-index: 5;
+    }
+    
+    .secret:hover {
+      opacity: 1;
+      transform: scale(1.35);
+      box-shadow: 0 0 40px #ffcc0099, 0 0 60px #ff990066;
+    }
+    
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.65);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+    
+    .modal-content {
+      background: linear-gradient(to bottom, #fffefb, #fff5f8);
+      padding: 2.8rem;
+      border-radius: 24px;
+      max-width: 520px;
+      text-align: center;
+      box-shadow: 0 12px 50px rgba(255,182,193,0.8);
+      border: 2px solid #ffccdd;
+      animation: pop 0.5s;
+    }
+    
+    .close { font-size: 2.5rem; float: right; cursor: pointer; color: #ff6699; line-height: 1; }
+    
+    @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-18px); } }
+    @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.18); } }
+    @keyframes pop { from { transform: scale(0.65); opacity:0; } to { transform: scale(1); opacity:1; } }
+    
+    /* Fondos (cámbialos por tus imágenes preferidas) */
+    #p1 { background-image: url('https://i.ibb.co/zWbPMBwt/fondo11.jpg'); }
+    #p2 { background: linear-gradient(to bottom, #fff0f5, #ffe4e1); }
+    #p3 { background-image: url('https://i.ibb.co/nMKxxvPG/fondo1.jpg'); } /* girasoles aproximado */
+    #p4 { background-image: url('https://i.ibb.co/YTYR0FB2/fondo2.jpg'); }
+    #p5 { background-image: url('https://i.ibb.co/Gv22DzcB/fondo4.jpg'); }
+    #p6 { background-image: url('https://i.ibb.co/zWbPMBwt/fondo11.jpg'); }
+    #p7 { background: linear-gradient(to right, #fff0f5, #e6e6fa, #ffe4e1); }
+    #p8 { background: linear-gradient(135deg, #ffccd5, #ffe6cc, #e0ffff); }
+  </style>
+</head>
+<body>
+
+<!-- Página 1 - Portada -->
+<div id="p1" class="page active">
+  <h1>El Viaje Mágico de Lizzy</h1>
+  <button class="btn" onclick="goTo('p2')">Comenzar aventura</button>
+</div>
+
+<!-- Página 2 - Instrucciones -->
+<div id="p2" class="page">
+  <h2>Instrucciones</h2>
+  <p>Encuentra los secretos escondidos en cada mundo. Cuando los descubras todos… algo mágico aparecerá.</p>
+  <button class="btn" onclick="goTo('p3')">Entrar al primer mundo</button>
+</div>
+
+<!-- Página 3 - Jardín Dorado -->
+<div id="p3" class="page">
+  <h2>Nivel 1 – Jardín Dorado</h2>
+  <p>Explora con cuidado… hay sorpresas doradas esperándote 🌻</p>
+  
+  <div class="secret" style="top:22%; left:18%;" onclick="showModal('¡Tu compañero fiel siempre estará contigo! 🐕💛 Un amor incondicional como el de Princesa.')"></div>
+  <div class="secret" style="top:58%; right:22%;" onclick="showModal('Tus alas brillan más de lo que imaginas. Vuela alto, Lizzy 🦋✨')"></div>
+  
+  <button class="next-page-btn" onclick="goTo('p4')">→ Siguiente mundo</button>
+</div>
+
+<!-- Página 4 - Castillo Encantado -->
+<div id="p4" class="page">
+  <h2>Nivel 2 – Castillo Encantado</h2>
+  <p>Tu luz ilumina hasta los rincones más oscuros… 👑</p>
+  
+  <div class="secret" style="top:28%; left:15%;" onclick="showModal('Tu luz ilumina todo a tu alrededor, con tu sonrisa haces el día a cualquier persona.')"></div>
+  <div class="secret" style="top:52%; right:18%;" onclick="showModal('Tu fuerza es como el hielo que se transforma en belleza: resistente y hermoso. ❄️')"></div>
+  <div class="secret" style="bottom:18%; left:48%;" onclick="showModal('Mereces un amor que te haga sentir como en un cuento… y sueños tan grandes como el cielo. 👠💖')"></div>
+  
+  <button class="next-page-btn" onclick="goTo('p5')">→ Siguiente mundo</button>
+</div>
+
+<!-- Página 5 - Camino Amarillo -->
+<div id="p5" class="page">
+  <h2>Nivel 3 – Camino Amarillo</h2>
+  <p>Sigue el camino… hay magia en cada paso que das 🌼</p>
+  
+  <div class="secret" style="top:38%; left:20%;" onclick="showModal('Incluso las tormentas traen arcoíris después… aguanta un poco más 🌪️❤️')"></div>
+  <div class="secret" style="top:48%; right:25%;" onclick="showModal('Hasta tus zapatos brillan porque tú brillas. Camina con confianza siempre 👠✨')"></div>
+  
+  <button class="next-page-btn" onclick="goTo('p6')">→ Siguiente mundo</button>
+</div>
+
+<!-- Página 6 - Universo Rosa -->
+<div id="p6" class="page">
+  <h2>Nivel 4 – Universo Rosa</h2>
+  <p>Eres parte de algo mucho más grande… 🌌</p>
+  
+  <div class="secret" style="top:35%; left:22%;" onclick="showModal('Tu energía vibra alto, como el aleteo rápido y lleno de vida de un colibrí 🐦💗')"></div>
+  <div class="secret" style="top:62%; right:20%;" onclick="showModal('Tus alas de ángel están siempre protegiéndote. Sana, ama, brilla 👼✨')"></div>
+  
+  <button class="next-page-btn" onclick="goTo('p7')">→ Siguiente mundo</button>
+</div>
+
+<!-- Página 7 - Final Secreta -->
+<div id="p7" class="page">
+  <h2>¡Descubriste todos los secretos!</h2>
+  <p>Lizzy, eres luz, fuerza, ternura y magia.<br>Gracias por dejarme ser parte de tu viaje tan hermoso, te quiero mucho.</p>
+  <p>Te admiro profundamente y siempre estaré aquí para recordarte lo increíble que eres 💕</p>
+  <button class="btn" onclick="goTo('p8')">Último secreto</button>
+</div>
+
+<!-- Página 8 - Sorpresa Final -->
+<div id="p8" class="page">
+  <h2>Sorpresa Final para ti 💖</h2>
+<div class="video-container">
+<iframe 
+  width="700"
+  height="400"
+  src="https://www.youtube.com/embed/HHz88A8VVR0"
+  frameborder="0"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  allowfullscreen>
+</iframe>
+</div>
+  <p style="font-size:1.2rem; margin-top:2rem;">( <video>)</p>
+  <p>Con todo mi cariño para tí🌸</p>
+</div>
+
+<!-- Modal -->
+<div id="modal" class="modal" onclick="closeModal(event)">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <span class="close" onclick="closeModal()">×</span>
+    <p id="modalText"></p>
+  </div>
+</div>
+
+<script>
+  let current = 'p1';
+
+  function goTo(id) {
+    document.getElementById(current).classList.remove('active');
+    document.getElementById(id).classList.add('active');
+    current = id;
+    window.scrollTo(0,0);
+  }
+
+  function showModal(text) {
+    document.getElementById('modalText').innerHTML = text;
+    document.getElementById('modal').style.display = 'flex';
+  }
+
+  function closeModal(e) {
+    if (!e || e.target.classList.contains('modal') || e.target.classList.contains('close')) {
+      document.getElementById('modal').style.display = 'none';
+    }
+  }
+</script>
+
+</body>
+</html>
